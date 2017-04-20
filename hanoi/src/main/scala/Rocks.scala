@@ -34,14 +34,19 @@ class Rocks(state : Rocks.State) {
 
   def hanoi(disk: Int, source: Peg, buffer: Peg, destn: Peg): Rocks = {
 
-      if (disk <= 0) { /**move the smallest disk */
-        move(disk, source, buffer, destn)
-      } else {
+    if (disk <= 0) {
+      /** move the smallest disk */
+      move(disk, source, buffer, destn)
+    } else {
+      /** move all smaller disks to buffer */
+      hanoi(disk - 1, source, destn, buffer)
 
-        hanoi(disk - 1, source, destn, buffer)    /** move all smaller disks to buffer */
-          .move(disk, source, buffer, destn)      /** move the current disk */
-          .hanoi(disk - 1, buffer, source, destn) /** retrieve all other disks from buffer */
-      }
+        /** move the current disk */
+        .move(disk, source, buffer, destn)
+
+        /** retrieve all other disks from buffer */
+        .hanoi(disk - 1, buffer, source, destn)
+    }
   }
 
   def move(disk: Int, source: Peg, buffer: Peg, destn: Peg): Rocks = {
@@ -56,13 +61,15 @@ class Rocks(state : Rocks.State) {
     } else {
 
       new Rocks(Map(source -> state(source).tail,
-      buffer -> state(buffer),
-      destn -> (disk :: state(destn))))
+        buffer -> state(buffer),
+        destn -> (disk :: state(destn))))
+    }
   }
 }
 
 object Main extends App {
-  Rocks.solve(4).dump
+  Rocks.solve(16).dump
 }
+
 
 
